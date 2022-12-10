@@ -70,16 +70,11 @@ const posts = [
 
 // recupero il div container dal DOM
 const containerElement = document.getElementById('container');
-
 // dichiaro una variabile per definire l'indice del ciclo
 let i = 0;
 
-// creo un ciclo while 
+// creo un ciclo while per creare tutti i post che mi servono in base alla lunghezza dell'array
 while (i < posts.length) {
-
-    // dichiaro una costante per vedere il singolo post in console
-    const postObj = posts[i];
-    console.log(postObj);
 
     // aggiungo il contenuto del container al DOM con il template literals
     containerElement.innerHTML += `
@@ -87,31 +82,62 @@ while (i < posts.length) {
                 <div class="post__header">
                     <div class="post-meta">                    
                         <div class="post-meta__icon">
-                            <img class="profile-pic" src="https://unsplash.it/300/300?image=15" alt="Phil Mangione">                    
+                            <img class="profile-pic" src="${posts[i].author.image}" alt="Phil Mangione">                    
                         </div>
                         <div class="post-meta__data">
-                            <div class="post-meta__author">Phil Mangione</div>
-                            <div class="post-meta__time">4 mesi fa</div>
+                            <div class="post-meta__author">${posts[i].author.name}</div>
+                            <div class="post-meta__time">${posts[i].created}</div>
                         </div>                    
                     </div>
                 </div>
                 <div class="post__text">Placeat libero ipsa nobis ipsum quibusdam quas harum ut. Distinctio minima iusto. Ad ad maiores et sint voluptate recusandae architecto. Et nihil ullam aut alias.</div>
                 <div class="post__image">
-                    <img src="https://unsplash.it/600/300?image=171" alt="">
+                    <img src="${posts[i].media}" alt="">
                 </div>
                 <div class="post__footer">
                     <div class="likes js-likes">
                         <div class="likes__cta">
-                            <a class="like-button  js-like-button" href="#" data-postid="1">
+                            <a class="like-button  js-like-button" data-postid="${posts[i].id}">
                                 <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
                                 <span class="like-button__label">Mi Piace</span>
                             </a>
                         </div>
                         <div class="likes__counter">
-                            Piace a <b id="like-counter-1" class="js-likes-counter">80</b> persone
+                            Piace a <b id="${posts[i].id}" class="js-likes-counter">${posts[i].likes}</b> persone
                         </div>
                     </div> 
                 </div>            
             </div>`;
     i++
-}
+};
+
+// recupero l'input dei like e il counter
+const likeInput = document.querySelectorAll('a.like-button');
+const likeCounter = document.querySelectorAll('div.likes__counter');
+
+// creo un array vuoto che ospiterà gli id dei post a cui ho messo like 
+let liked = [];
+console.log(liked);
+
+// aggiuingo un forEach all'elemento input
+likeInput.forEach((element, index) => {
+
+    // creo un evento 
+    element.addEventListener('click', function () {
+        // aggiungo la classe a element (likeInput) con un toggle in modo che se clicco di nuovo sull'input la classe si rimuove automaticamente 
+        element.classList.toggle('like-button--liked');
+        
+        // creo una condizione in cui dico che se la classe aggiunta con il click è presente:
+        if (element.classList.contains('like-button--liked') === true) {
+
+            // :sovrascrivo con il template literals post[index].likes aggiungendo 1
+            likeCounter[index].innerHTML = `Piace a <b id="${posts[index].id}" class="js-likes-counter">${posts[index].likes + 1}</b> persone`;
+            // poi faccio push dell'id del post a cui ho messo like nel array liked
+            liked.push(posts[index].id);
+        } 
+        // altrimenti se la classe non è presente lo riporto alla condizione originale
+        else if (element.classList.contains('like-button--liked') === false) {
+            likeCounter[index].innerHTML = `Piace a <b id="${posts[index].id}" class="js-likes-counter">${posts[index].likes}</b> persone`;
+        }  
+    });
+});
